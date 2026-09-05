@@ -1,66 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { categories, products } from './data';
 
-function Brand() {
-  return <a className="brand" href="#top" aria-label="Tabletop and Co. home"><span className="brand-mark">T</span><span>Tabletop <em>&</em> Co.</span></a>;
+function Brand() { return <a className="brand" href="/" onClick={(event) => { event.preventDefault(); window.history.pushState({}, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} aria-label="Tabletop and Co. home"><span className="brand-mark">T</span><span>Tabletop <em>&</em> Co.</span></a>; }
+
+function Header({ cartCount, navigate }) {
+  return <header className="site-header"><div className="header-inner"><Brand /><nav className="main-nav" aria-label="Main navigation"><button onClick={() => navigate('/')}>Home</button><button onClick={() => navigate('/shop')}>Shop</button><button onClick={() => navigate('/#categories')}>Categories</button><button onClick={() => navigate('/#story')}>Our story</button></nav><div className="header-actions"><button className="icon-button" onClick={() => navigate('/shop')} aria-label="Search">⌕</button><button className="icon-button" onClick={() => navigate('/account')} aria-label="Account">♙</button><button className="cart-link" onClick={() => navigate('/cart')}>Cart <span>{cartCount}</span></button></div></div></header>;
 }
 
-function Header({ cartCount }) {
-  return (
-    <header className="site-header">
-      <div className="header-inner">
-        <Brand />
-        <nav className="main-nav" aria-label="Main navigation"><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our story</a></nav>
-        <div className="header-actions"><button className="icon-button" aria-label="Search">⌕</button><button className="icon-button" aria-label="Account">♙</button><a className="cart-link" href="#cart">Cart <span>{cartCount}</span></a></div>
-      </div>
-    </header>
-  );
+function ProductArtwork({ accent }) { return <div className={`product-art art-${accent}`} aria-hidden="true"><span className="art-label">PLAY<br />MORE</span></div>; }
+
+function ProductCard({ product, onAdd, onView }) {
+  return <article className="product-card"><button className="product-image-button" onClick={() => onView(product.id)} aria-label={`View ${product.name}`}><div className="product-image-wrap">{product.tag && <span className="product-tag">{product.tag}</span>}<ProductArtwork accent={product.accent} /></div></button><div className="product-info"><div><p className="product-category">{product.category}</p><button className="product-name" onClick={() => onView(product.id)}>{product.name}</button></div><strong>${product.price.toFixed(2)}</strong></div><div className="product-meta"><span>★ {product.rating}</span><span>{product.players}</span><span>{product.duration}</span></div><button className="add-button" onClick={() => onAdd(product)}>Add to cart</button></article>;
 }
 
-function ProductArtwork({ accent }) {
-  return <div className={`product-art art-${accent}`} aria-hidden="true"><span className="art-shape" /><span className="art-label">PLAY<br />MORE</span></div>;
+function HomePage({ navigate, onAdd, onView }) {
+  return <><section className="hero"><div className="hero-copy"><p className="eyebrow">The good kind of screen time</p><h1>Bring people<br /><i>to the table.</i></h1><p className="hero-text">Thoughtfully chosen board games for curious minds, competitive spirits, and everyone in between.</p><button className="button button-dark" onClick={() => navigate('/shop')}>Explore the collection <span>↗</span></button></div><div className="hero-scene" aria-label="A stack of colorful board game pieces"><div className="sun" /><div className="table-shape"><span className="die die-one">5</span><span className="die die-two">●</span><span className="meeple">♟</span><span className="card-stack" /></div><span className="scene-note">Games for<br /><b>good company</b></span></div></section><section className="category-strip" id="categories"><div className="section-heading"><div><p className="eyebrow">Find your next favorite</p><h2>Shop by mood</h2></div><button className="text-link" onClick={() => navigate('/shop')}>View all categories <span>↗</span></button></div><div className="category-grid">{categories.map((category) => <button className="category-tile" onClick={() => navigate(`/shop?category=${encodeURIComponent(category.name)}`)} key={category.name}><div className={`category-art ${category.color}`}><span>{category.name === 'Strategy' ? '♜' : category.name === 'Family' ? '◒' : category.name === 'Party' ? '✦' : '♢'}</span></div><div><h3>{category.name}</h3><p>{category.count} games</p></div><span className="arrow">↗</span></button>)}</div></section><section className="collection"><div className="section-heading"><div><p className="eyebrow">A few we love</p><h2>Featured games</h2></div><button className="text-link" onClick={() => navigate('/shop')}>See the full shop <span>↗</span></button></div><div className="product-grid">{products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} onAdd={onAdd} onView={onView} />)}</div></section><section className="story" id="story"><div className="story-art"><span className="story-card card-a">PLAY<br />TOGETHER</span><span className="story-card card-b">NO<br />PHONES</span><span className="story-piece">✦</span></div><div className="story-copy"><p className="eyebrow">More than a shop</p><h2>Make room<br /><i>for play.</i></h2><p>We believe the best nights start with a little curiosity. Our shelves are filled with games we have played, loved, and would gladly teach again.</p><button className="button button-outline" onClick={() => navigate('/shop')}>Find a game <span>↗</span></button></div></section></>;
 }
 
-function ProductCard({ product, onAdd }) {
-  return (
-    <article className="product-card">
-      <div className="product-image-wrap">{product.tag && <span className="product-tag">{product.tag}</span>}<ProductArtwork accent={product.accent} /><button className="quick-add" onClick={() => onAdd(product)} aria-label={`Add ${product.name} to cart`}>+</button></div>
-      <div className="product-info"><div><p className="product-category">{product.category}</p><h3>{product.name}</h3></div><strong>${product.price.toFixed(2)}</strong></div>
-      <div className="product-meta"><span>★ {product.rating}</span><span>{product.players}</span><span>{product.duration}</span></div>
-    </article>
-  );
+function ShopPage({ navigate, onAdd, onView }) {
+  const params = new URLSearchParams(window.location.search);
+  const [search, setSearch] = useState(params.get('search') || '');
+  const [category, setCategory] = useState(params.get('category') || 'All categories');
+  const [sort, setSort] = useState('Featured');
+  const filtered = products.filter((product) => (category === 'All categories' || product.category === category) && product.name.toLowerCase().includes(search.toLowerCase())).sort((a, b) => sort === 'Price: low to high' ? a.price - b.price : sort === 'Price: high to low' ? b.price - a.price : b.rating - a.rating);
+  return <section className="shop-page"><div className="page-heading"><p className="eyebrow">The collection</p><h1>Find your next<br /><i>favorite game.</i></h1><p>Browse games chosen for memorable nights, from quick family rounds to deeper strategy sessions.</p></div><div className="shop-controls"><label>Search <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search games" /></label><label>Category <select value={category} onChange={(event) => setCategory(event.target.value)}><option>All categories</option>{categories.map((item) => <option key={item.name}>{item.name}</option>)}</select></label><label>Sort <select value={sort} onChange={(event) => setSort(event.target.value)}><option>Featured</option><option>Price: low to high</option><option>Price: high to low</option></select></label></div><div className="shop-result-row"><span>{filtered.length} games</span>{(search || category !== 'All categories') && <button onClick={() => { setSearch(''); setCategory('All categories'); }}>Clear filters</button>}</div>{filtered.length ? <div className="product-grid">{filtered.map((product) => <ProductCard key={product.id} product={product} onAdd={onAdd} onView={onView} />)}</div> : <div className="empty-state"><h2>No games found</h2><p>Try another search or clear the filters.</p></div>}</section>;
 }
+
+function ProductPage({ product, onAdd, navigate }) { return <section className="detail-page"><button className="back-link" onClick={() => navigate('/shop')}>← Back to shop</button><div className="detail-layout"><ProductArtwork accent={product.accent} /><div className="detail-copy"><p className="eyebrow">{product.category} · {product.tag}</p><h1>{product.name}</h1><p className="detail-price">${product.price.toFixed(2)}</p><p className="detail-description">A beautifully designed game for bringing good people together. Settle in, learn the rules, and make an evening of it.</p><div className="detail-facts"><span>★ {product.rating} rating</span><span>{product.players}</span><span>{product.duration}</span></div><button className="button button-dark" onClick={() => onAdd(product)}>Add to cart <span>＋</span></button></div></div></section>; }
+
+function CartPage({ cart, updateQuantity, removeItem, navigate }) { const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); return <section className="cart-page"><div className="page-heading compact"><p className="eyebrow">Your picks</p><h1>Your shopping<br /><i>cart.</i></h1></div>{cart.length ? <div className="cart-layout"><div className="cart-items">{cart.map((item) => <div className="cart-item" key={item.id}><ProductArtwork accent={item.accent} /><div><p className="product-category">{item.category}</p><h3>{item.name}</h3><strong>${item.price.toFixed(2)}</strong></div><div className="quantity-control"><button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button><span>{item.quantity}</span><button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button></div><button className="remove-button" onClick={() => removeItem(item.id)}>Remove</button></div>)}</div><aside className="cart-summary"><p className="eyebrow">Order summary</p><div><span>Subtotal</span><strong>${total.toFixed(2)}</strong></div><div><span>Delivery</span><span>Calculated later</span></div><hr /><div className="summary-total"><span>Total</span><strong>${total.toFixed(2)}</strong></div><button className="button button-dark" onClick={() => navigate('/checkout')}>Continue to checkout <span>↗</span></button></aside></div> : <div className="empty-state"><h2>Your cart is waiting.</h2><p>Find a game and bring it home.</p><button className="button button-dark" onClick={() => navigate('/shop')}>Browse the shop <span>↗</span></button></div>}</section>; }
+
+function PlaceholderPage({ type, navigate }) { return <section className="placeholder-page"><p className="eyebrow">Coming in a later phase</p><h1>{type === 'account' ? 'Your account.' : 'Checkout.'}</h1><p>This frontend view is ready for the future API, authentication, and Stripe integration.</p><button className="button button-dark" onClick={() => navigate('/shop')}>Back to the shop <span>↗</span></button></section>; }
 
 function App() {
+  const [path, setPath] = useState(window.location.pathname + window.location.search);
   const [cart, setCart] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('All games');
-  const visibleProducts = activeCategory === 'All games' ? products : products.filter((product) => product.category === activeCategory);
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-
-  function addToCart(product) {
-    setCart((current) => {
-      const existing = current.find((item) => item.id === product.id);
-      return existing ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }];
-    });
-  }
-
-  return (
-    <div id="top">
-      <div className="announcement">Free local delivery on orders over $75 <span>•</span> Carefully chosen games, always</div>
-      <Header cartCount={cartCount} />
-      <main>
-        <section className="hero"><div className="hero-copy"><p className="eyebrow">The good kind of screen time</p><h1>Bring people<br /><i>to the table.</i></h1><p className="hero-text">Thoughtfully chosen board games for curious minds, competitive spirits, and everyone in between.</p><a className="button button-dark" href="#shop">Explore the collection <span>↗</span></a></div><div className="hero-scene" aria-label="A stack of colorful board game pieces"><div className="sun" /><div className="table-shape"><span className="die die-one">5</span><span className="die die-two">●</span><span className="meeple">♟</span><span className="card-stack" /></div><span className="scene-note">Games for<br /><b>good company</b></span></div></section>
-
-        <section className="category-strip" id="categories"><div className="section-heading"><div><p className="eyebrow">Find your next favorite</p><h2>Shop by mood</h2></div><a href="#shop" className="text-link">View all categories <span>↗</span></a></div><div className="category-grid">{categories.map((category) => <a className="category-tile" href="#shop" key={category.name}><div className={`category-art ${category.color}`}><span>{category.name === 'Strategy' ? '♜' : category.name === 'Family' ? '◒' : category.name === 'Party' ? '✦' : '♢'}</span></div><div><h3>{category.name}</h3><p>{category.count} games</p></div><span className="arrow">↗</span></a>)}</div></section>
-
-        <section className="collection" id="shop"><div className="section-heading"><div><p className="eyebrow">A few we love</p><h2>Featured games</h2></div><div className="filter-tabs">{['All games', 'Strategy', 'Family'].map((category) => <button className={activeCategory === category ? 'active' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}</div></div><div className="product-grid">{visibleProducts.map((product) => <ProductCard key={product.id} product={product} onAdd={addToCart} />)}</div></section>
-
-        <section className="story" id="story"><div className="story-art"><span className="story-card card-a">PLAY<br />TOGETHER</span><span className="story-card card-b">NO<br />PHONES</span><span className="story-piece">✦</span></div><div className="story-copy"><p className="eyebrow">More than a shop</p><h2>Make room<br /><i>for play.</i></h2><p>We believe the best nights start with a little curiosity. Our shelves are filled with games we have played, loved, and would gladly teach again.</p><a className="button button-outline" href="#top">Meet the team <span>↗</span></a></div></section>
-      </main>
-      <footer><Brand /><p>Good games. Better company.</p><span>© 2026 Tabletop & Co.</span></footer>
-      {cartCount > 0 && <div className="cart-toast" id="cart">{cartCount} {cartCount === 1 ? 'game' : 'games'} in your cart <button onClick={() => setCart([])}>Clear</button></div>}
-    </div>
-  );
+  useEffect(() => { const onPopState = () => setPath(window.location.pathname + window.location.search); window.addEventListener('popstate', onPopState); return () => window.removeEventListener('popstate', onPopState); }, []);
+  function navigate(to) { window.history.pushState({}, '', to); setPath(to); window.scrollTo(0, 0); }
+  function addToCart(product) { setCart((current) => { const existing = current.find((item) => item.id === product.id); return existing ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }]; }); }
+  function updateQuantity(id, quantity) { setCart((current) => quantity < 1 ? current.filter((item) => item.id !== id) : current.map((item) => item.id === id ? { ...item, quantity } : item)); }
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0); const productId = path.match(/^\/product\/(\d+)/)?.[1]; const product = products.find((item) => item.id === Number(productId));
+  let page = path.startsWith('/shop') ? <ShopPage navigate={navigate} onAdd={addToCart} onView={(id) => navigate(`/product/${id}`)} /> : path.startsWith('/product/') && product ? <ProductPage product={product} onAdd={addToCart} navigate={navigate} /> : path === '/cart' ? <CartPage cart={cart} updateQuantity={updateQuantity} removeItem={(id) => updateQuantity(id, 0)} navigate={navigate} /> : path === '/account' ? <PlaceholderPage type="account" navigate={navigate} /> : path === '/checkout' ? <PlaceholderPage type="checkout" navigate={navigate} /> : <HomePage navigate={navigate} onAdd={addToCart} onView={(id) => navigate(`/product/${id}`)} />;
+  return <div id="top"><div className="announcement">Free local delivery on orders over $75 <span>•</span> Carefully chosen games, always</div><Header cartCount={cartCount} navigate={navigate} /><main>{page}</main><footer><Brand /><p>Good games. Better company.</p><span>© 2026 Tabletop & Co.</span></footer>{cartCount > 0 && <button className="cart-toast" onClick={() => navigate('/cart')}>{cartCount} {cartCount === 1 ? 'game' : 'games'} in your cart <span>View cart ↗</span></button>}</div>;
 }
 
 export default App;

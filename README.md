@@ -27,3 +27,4 @@ The project is currently in Phase 3: Frontend Application.
 - 2026-09-05: Created the initial project documentation and Phase 1 planning document.
 - 2026-09-05: Added the Phase 2 architecture, normalized database design, REST API specification, and UI wireframes.
 - 2026-09-05: Created the React/Vite frontend foundation with responsive storefront UI, mock catalog data, category filters, and a local cart interaction.
+- 2026-09-05: Expanded the frontend with separate Home, Shop, product detail, cart, account, and checkout views; added local search, category filtering, sorting, product navigation, quantity controls, and frontend-ready placeholders.
