@@ -35,8 +35,9 @@ function PlaceholderPage({ type, navigate }) { return <section className="placeh
 function App() {
   const [path, setPath] = useState(window.location.pathname + window.location.search);
   const [cart, setCart] = useState([]);
-  useEffect(() => { const onPopState = () => setPath(window.location.pathname + window.location.search); window.addEventListener('popstate', onPopState); return () => window.removeEventListener('popstate', onPopState); }, []);
-  function navigate(to) { window.history.pushState({}, '', to); setPath(to); window.scrollTo(0, 0); }
+  useEffect(() => { const onPopState = () => setPath(window.location.pathname + window.location.search + window.location.hash); window.addEventListener('popstate', onPopState); return () => window.removeEventListener('popstate', onPopState); }, []);
+  useEffect(() => { const hash = window.location.hash; if (hash) window.requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); }, [path]);
+  function navigate(to) { window.history.pushState({}, '', to); setPath(window.location.pathname + window.location.search + window.location.hash); if (!to.includes('#')) window.scrollTo(0, 0); }
   function addToCart(product) { setCart((current) => { const existing = current.find((item) => item.id === product.id); return existing ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }]; }); }
   function updateQuantity(id, quantity) { setCart((current) => quantity < 1 ? current.filter((item) => item.id !== id) : current.map((item) => item.id === id ? { ...item, quantity } : item)); }
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0); const productId = path.match(/^\/product\/(\d+)/)?.[1]; const product = products.find((item) => item.id === Number(productId));
