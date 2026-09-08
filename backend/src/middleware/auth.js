@@ -15,4 +15,13 @@ function requireAuth(request, response, next) {
   }
 }
 
-module.exports = { requireAuth };
+function requireRole(...roles) {
+  return (request, response, next) => {
+    if (!roles.includes(request.user.role)) {
+      return response.status(403).json({ error: { code: 'FORBIDDEN', message: 'You do not have permission to access this resource.' } });
+    }
+    next();
+  };
+}
+
+module.exports = { requireAuth, requireRole };

@@ -24,18 +24,29 @@
 - `GET /api/health`: confirms the API is running and identifies Phase 4.
 - `POST /api/auth/register`: validates and creates a customer with a bcrypt password hash.
 - `POST /api/auth/login`: verifies credentials and returns a JWT.
+- `GET /api/auth/me`: returns the authenticated user's public profile.
 - `GET /api/categories`: returns available categories.
 - `GET /api/products`: returns products with optional `search` and `category` filters.
 - `GET /api/products/:productId`: returns one product.
 - `GET /api/cart`: returns the authenticated customer's cart.
 - `POST /api/cart/items`: adds a product to the authenticated customer's cart.
 - `PUT /api/cart/items/:itemId`: changes an authenticated cart item's quantity.
+- `GET /api/admin/status`: admin-only verification route used to test role authorization.
 
 Protected cart routes require:
 
 ```text
 Authorization: Bearer <JWT>
 ```
+
+The development mock repository includes an admin account to verify authorization:
+
+```text
+Email: admin@example.com
+Password: admin-password-change-me
+```
+
+This credential exists only for local development and must be replaced with a secure seeded account before deployment.
 
 ## Run Locally
 
@@ -89,6 +100,7 @@ Invoke-RestMethod http://127.0.0.1:4000/api/auth/register -Method Post -ContentT
 - Admin CRUD and reporting belong to Phase 7.
 - The React frontend is not yet connected to these routes; API integration is the next frontend/backend connection step.
 - JWT is implemented for development, but deployment secrets and production token policy require security review.
+- Customer tokens are denied admin routes with HTTP `403`; admin tokens can access admin-only routes.
 
 ## Phase 4 Review Checklist
 

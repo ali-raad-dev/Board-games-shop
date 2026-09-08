@@ -42,3 +42,4 @@ The project is currently in Phase 4: Back-End Application.
 - 2026-09-05: Created the React/Vite frontend foundation with responsive storefront UI, mock catalog data, category filters, and a local cart interaction.
 - 2026-09-05: Expanded the frontend with separate Home, Shop, product detail, cart, account, and checkout views; added local search, category filtering, sorting, product navigation, quantity controls, and frontend-ready placeholders.
 - 2026-09-08: Started Phase 4 with a runnable Express REST API, JWT/bcrypt authentication, public catalog routes, protected cart routes, and a documented backend file map using temporary in-memory data.
+- 2026-09-08: Completed the Phase 4 role-authorization slice with customer/admin JWT roles, `/api/auth/me`, and an admin-only verification route.

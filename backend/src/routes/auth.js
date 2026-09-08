@@ -33,4 +33,10 @@ function login(request, response) {
   response.json({ user: publicUser(user), token: createToken(user) });
 }
 
-module.exports = { register, login, publicUser };
+function getCurrentUser(request, response) {
+  const user = users.find((candidate) => candidate.id === request.user.id);
+  if (!user) return response.status(404).json({ error: { code: 'USER_NOT_FOUND', message: 'User not found.' } });
+  response.json({ user: publicUser(user) });
+}
+
+module.exports = { register, login, getCurrentUser, publicUser };
