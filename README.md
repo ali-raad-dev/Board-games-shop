@@ -14,13 +14,14 @@ A full-stack e-commerce website for selling board games as a fourth-year Compute
 
 ## Project Status
 
-The project is currently in Phase 4: Back-End Application.
+The project is currently in Phase 5: Database.
 
 ## Documentation
 
 - [Phase 1: Requirements and Planning](docs/phase-1-requirements.md)
 - [Phase 2: System Design Package](docs/phase-2-system-design.md)
 - [Phase 4: Back-End Application](docs/phase-4-backend.md)
+- [Phase 5: Database](docs/phase-5-database.md)
 
 ## Phase File Map
 
@@ -28,7 +29,7 @@ The project is currently in Phase 4: Back-End Application.
 - Phase 2 system design: `docs/phase-2-system-design.md`
 - Phase 3 frontend application: `frontend/`
 - Phase 4 backend application: `backend/`
-- Phase 5 database: not started
+- Phase 5 database: `database/` and `backend/src/config/database.js`
 - Phase 6 payment and order workflow: not started
 - Phase 7 admin dashboard: not started
 - Phase 8 testing: not started
@@ -43,3 +44,4 @@ The project is currently in Phase 4: Back-End Application.
 - 2026-09-05: Expanded the frontend with separate Home, Shop, product detail, cart, account, and checkout views; added local search, category filtering, sorting, product navigation, quantity controls, and frontend-ready placeholders.
 - 2026-09-08: Started Phase 4 with a runnable Express REST API, JWT/bcrypt authentication, public catalog routes, protected cart routes, and a documented backend file map using temporary in-memory data.
 - 2026-09-08: Completed the Phase 4 role-authorization slice with customer/admin JWT roles, `/api/auth/me`, and an admin-only verification route.
+- 2026-09-08: Prepared Phase 5 with a normalized MySQL schema, 32 seeded products, categories, users, carts, sample orders, order snapshots, payments, and a MySQL connection pool.

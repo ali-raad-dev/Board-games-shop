@@ -1,0 +1,136 @@
+CREATE DATABASE IF NOT EXISTS board_games_shop
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE board_games_shop;
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS order_addresses;
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS carts;
+DROP TABLE IF EXISTS product_images;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  role ENUM('customer', 'admin') NOT NULL DEFAULT 'customer',
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE addresses (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  recipient_name VARCHAR(120) NOT NULL,
+  line_1 VARCHAR(180) NOT NULL,
+  line_2 VARCHAR(180) NULL,
+  city VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(30) NOT NULL,
+  country VARCHAR(100) NOT NULL,
+  CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE categories (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(80) NOT NULL UNIQUE,
+  description VARCHAR(255) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE products (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  category_id INT UNSIGNED NOT NULL,
+  name VARCHAR(160) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  stock_quantity INT UNSIGNED NOT NULL DEFAULT 0,
+  rating DECIMAL(2, 1) NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id),
+  CONSTRAINT chk_products_price CHECK (price >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE product_images (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id INT UNSIGNED NOT NULL,
+  image_url VARCHAR(500) NOT NULL,
+  is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_product_images_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE carts (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_carts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE cart_items (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  cart_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NOT NULL,
+  quantity INT UNSIGNED NOT NULL,
+  UNIQUE KEY uq_cart_product (cart_id, product_id),
+  CONSTRAINT fk_cart_items_cart FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+  CONSTRAINT fk_cart_items_product FOREIGN KEY (product_id) REFERENCES products(id),
+  CONSTRAINT chk_cart_items_quantity CHECK (quantity > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE orders (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  status ENUM('pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled') NOT NULL DEFAULT 'pending',
+  total_amount DECIMAL(10, 2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT chk_orders_total CHECK (total_amount >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE order_items (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  order_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NOT NULL,
+  quantity INT UNSIGNED NOT NULL,
+  unit_price DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id),
+  CONSTRAINT chk_order_items_quantity CHECK (quantity > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE order_addresses (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  order_id INT UNSIGNED NOT NULL UNIQUE,
+  recipient_name VARCHAR(120) NOT NULL,
+  line_1 VARCHAR(180) NOT NULL,
+  line_2 VARCHAR(180) NULL,
+  city VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(30) NOT NULL,
+  country VARCHAR(100) NOT NULL,
+  CONSTRAINT fk_order_addresses_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE payments (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  order_id INT UNSIGNED NOT NULL UNIQUE,
+  provider VARCHAR(40) NOT NULL,
+  provider_reference VARCHAR(255) NULL,
+  status ENUM('pending', 'succeeded', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
+  amount DECIMAL(10, 2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  CONSTRAINT chk_payments_amount CHECK (amount >= 0)
+) ENGINE=InnoDB;
