@@ -45,3 +45,4 @@ The project is currently in Phase 5: Database.
 - 2026-09-08: Started Phase 4 with a runnable Express REST API, JWT/bcrypt authentication, public catalog routes, protected cart routes, and a documented backend file map using temporary in-memory data.
 - 2026-09-08: Completed the Phase 4 role-authorization slice with customer/admin JWT roles, `/api/auth/me`, and an admin-only verification route.
 - 2026-09-08: Prepared Phase 5 with a normalized MySQL schema, 32 seeded products, categories, users, carts, sample orders, order snapshots, payments, and a MySQL connection pool.
+- 2026-09-08: Added a standalone `/story` frontend page for Our Story with responsive feature content and navigation from the header.
