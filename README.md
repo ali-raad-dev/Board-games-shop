@@ -14,7 +14,7 @@ A full-stack e-commerce website for selling board games as a fourth-year Compute
 
 ## Project Status
 
-The project is currently in Phase 5: Database.
+The project is currently in Phase 6: Payment and Order Workflow.
 
 ## Documentation
 
@@ -22,6 +22,7 @@ The project is currently in Phase 5: Database.
 - [Phase 2: System Design Package](docs/phase-2-system-design.md)
 - [Phase 4: Back-End Application](docs/phase-4-backend.md)
 - [Phase 5: Database](docs/phase-5-database.md)
+- [Phase 6: Payment and Order Workflow](docs/phase-6-payment-order-workflow.md)
 
 ## Phase File Map
 
@@ -30,7 +31,7 @@ The project is currently in Phase 5: Database.
 - Phase 3 frontend application: `frontend/`
 - Phase 4 backend application: `backend/`
 - Phase 5 database: `database/` and `backend/src/config/database.js`
-- Phase 6 payment and order workflow: not started
+- Phase 6 payment and order workflow: `backend/src/routes/orders.js` and `backend/src/services/stripe.js`
 - Phase 7 admin dashboard: not started
 - Phase 8 testing: not started
 - Phase 9 deployment: not started
@@ -46,3 +47,4 @@ The project is currently in Phase 5: Database.
 - 2026-09-08: Completed the Phase 4 role-authorization slice with customer/admin JWT roles, `/api/auth/me`, and an admin-only verification route.
 - 2026-09-08: Prepared Phase 5 with a normalized MySQL schema, 32 seeded products, categories, users, carts, sample orders, order snapshots, payments, and a MySQL connection pool.
 - 2026-09-08: Added a standalone `/story` frontend page for Our Story with responsive feature content and navigation from the header.
+- 2026-09-09: Implemented Phase 6 Stripe test-mode payment intents, server-verified order creation, webhook handling, order listing, and HTML receipt output.
