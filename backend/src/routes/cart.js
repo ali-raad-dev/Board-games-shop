@@ -2,6 +2,23 @@ const { carts, products } = require('../data/mockData');
 
 function getCart(request, response) { response.json({ data: carts.get(request.user.id) || [] }); }
 
+function replaceCart(request, response) {
+  const requestedItems = Array.isArray(request.body.items) ? request.body.items : [];
+  const nextCart = [];
+
+  for (const requestedItem of requestedItems) {
+    const product = products.find((item) => item.id === Number(requestedItem.productId));
+    const quantity = Number(requestedItem.quantity);
+    if (!product || !Number.isInteger(quantity) || quantity < 1 || quantity > product.stockQuantity) {
+      return response.status(409).json({ error: { code: 'OUT_OF_STOCK', message: `${product?.name || 'A product'} is no longer available in that quantity.` } });
+    }
+    nextCart.push({ productId: product.id, name: product.name, price: product.price, quantity });
+  }
+
+  carts.set(request.user.id, nextCart);
+  response.json({ data: nextCart });
+}
+
 function addItem(request, response) {
   const product = products.find((item) => item.id === Number(request.body.productId));
   const quantity = Number(request.body.quantity);
@@ -23,4 +40,4 @@ function updateItem(request, response) {
   response.json({ data: cart });
 }
 
-module.exports = { getCart, addItem, updateItem };
+module.exports = { getCart, replaceCart, addItem, updateItem };

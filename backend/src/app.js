@@ -19,6 +19,7 @@ app.get('/api/categories', catalog.listCategories);
 app.get('/api/products', catalog.listProducts);
 app.get('/api/products/:productId', catalog.getProduct);
 app.get('/api/cart', requireAuth, cart.getCart);
+app.put('/api/cart', requireAuth, cart.replaceCart);
 app.post('/api/cart/items', requireAuth, cart.addItem);
 app.put('/api/cart/items/:itemId', requireAuth, cart.updateItem);
 app.post('/api/checkout/payment-intent', requireAuth, orders.createPaymentIntent);
