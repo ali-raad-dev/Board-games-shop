@@ -48,3 +48,4 @@ The project is currently in Phase 6: Payment and Order Workflow.
 - 2026-09-08: Prepared Phase 5 with a normalized MySQL schema, 32 seeded products, categories, users, carts, sample orders, order snapshots, payments, and a MySQL connection pool.
 - 2026-09-08: Added a standalone `/story` frontend page for Our Story with responsive feature content and navigation from the header.
 - 2026-09-09: Implemented Phase 6 Stripe test-mode payment intents, server-verified order creation, webhook handling, order listing, and HTML receipt output.
+- 2026-09-09: Connected the React frontend to the API for catalog loading, account auth, persistent cart, Stripe Payment Element checkout, order confirmation, and order history.

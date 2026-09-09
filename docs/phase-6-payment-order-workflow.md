@@ -9,6 +9,9 @@
 - Stripe client: `backend/src/services/stripe.js`
 - Payment and order routes: `backend/src/routes/orders.js`
 - Route registration and webhook body handling: `backend/src/app.js`
+- Frontend API client: `frontend/src/api.js`
+- Frontend checkout and customer flows: `frontend/src/App.jsx`
+- Frontend public environment template: `frontend/.env.example`
 - Temporary order store: `backend/src/data/mockData.js`
 - Stripe environment settings: `backend/.env.example`
 - Phase 5 database payment table: `database/schema.sql`
@@ -79,6 +82,19 @@ The current receipt is an HTML confirmation generated from the order snapshot. I
 - Stripe PaymentIntent reference
 
 PDF invoice formatting and MySQL order persistence can be refined after the workflow is reviewed.
+
+## Frontend Connection
+
+The React frontend now connects to the backend for:
+
+- Catalog loading with a fallback to local mock data
+- Registration and login
+- Persistent local cart state
+- Backend cart synchronization before checkout
+- Stripe Payment Element checkout
+- Order confirmation and order history
+
+To show Stripe's browser payment form, create `frontend/.env` from `frontend/.env.example` and add the publishable `pk_test_...` key. The secret `sk_test_...` key remains in `backend/.env` only.
 
 ## Phase Boundary
 
