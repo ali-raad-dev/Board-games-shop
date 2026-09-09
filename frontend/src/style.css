@@ -91,3 +91,7 @@ footer { align-items:center; background:var(--ink); color:var(--paper); display:
 .order-row { border-top:1px solid var(--line); display:grid; font:12px var(--mono); gap:10px; grid-template-columns:1fr auto auto; padding:14px 0; text-transform:capitalize; }
 @media (max-width:800px) { .account-panel { grid-template-columns:1fr; } }
 @media (max-width:520px) { .auth-page,.checkout-page,.account-page { padding:60px 6vw 90px; } .auth-form,.checkout-form { padding:20px; } .checkout-fields { grid-template-columns:1fr; } .checkout-fields label:first-child,.checkout-fields label:nth-child(2) { grid-column:auto; } .order-row { font-size:10px; grid-template-columns:1fr auto; } .order-row strong { grid-column:1 / -1; } }
+.payment-success { align-items:center; background:#d8ead2; border-left:4px solid #477b50; display:flex; gap:18px; margin-bottom:35px; padding:18px 20px; }
+.payment-success strong { color:#285b35; font-size:16px; }
+.payment-success span { color:#426148; font:12px var(--mono); }
+@media (max-width:520px) { .payment-success { align-items:flex-start; flex-direction:column; gap:5px; } }
