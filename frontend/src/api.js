@@ -20,8 +20,15 @@ export function createOrder(token, payload) { return request('/orders', { method
 export function getOrders(token) { return request('/orders', { headers: { Authorization: `Bearer ${token}` } }); }
 export function getAdminProducts(token) { return request('/admin/products', { headers: { Authorization: `Bearer ${token}` } }); }
 export function createAdminProduct(token, payload) { return request('/admin/products', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
+export function updateAdminProduct(token, productId, payload) { return request(`/admin/products/${productId}`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
+export function deleteAdminProduct(token, productId) { return request(`/admin/products/${productId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); }
+export function getAdminCategories(token) { return request('/admin/categories', { headers: { Authorization: `Bearer ${token}` } }); }
+export function createAdminCategory(token, payload) { return request('/admin/categories', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
+export function updateAdminCategory(token, categoryId, payload) { return request(`/admin/categories/${categoryId}`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
+export function deleteAdminCategory(token, categoryId) { return request(`/admin/categories/${categoryId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); }
 export function getAdminOrders(token) { return request('/admin/orders', { headers: { Authorization: `Bearer ${token}` } }); }
 export function updateAdminOrderStatus(token, orderId, status) { return request(`/admin/orders/${orderId}/status`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ status }) }); }
 export function getSalesReport(token) { return request('/admin/reports/sales', { headers: { Authorization: `Bearer ${token}` } }); }
+export function getTopProductsReport(token) { return request('/admin/reports/top-products', { headers: { Authorization: `Bearer ${token}` } }); }
 export async function getReceipt(token, orderId) { const response = await fetch(`${API_URL}/orders/${orderId}/receipt`, { headers: { Authorization: `Bearer ${token}` } }); if (!response.ok) throw new Error('Receipt unavailable.'); return response.text(); }
 export { API_URL };

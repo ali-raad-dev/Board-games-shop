@@ -104,3 +104,10 @@ footer { align-items:center; background:var(--ink); color:var(--paper); display:
 .admin-form { background:var(--cream); display:flex; flex-direction:column; gap:16px; padding:25px; } .admin-form h2 { margin:0 0 8px; } .admin-form label { display:flex; flex-direction:column; font:10px var(--mono); gap:7px; text-transform:uppercase; } .admin-form input,.admin-form select { background:var(--paper); border:1px solid var(--line); padding:11px; } .admin-form .button { border:0; margin-top:8px; }
 @media (max-width:800px) { .admin-layout { grid-template-columns:1fr; } .admin-row { grid-template-columns:1fr 1fr; } }
 @media (max-width:520px) { .admin-page { padding:60px 6vw 90px; } .admin-metrics { grid-template-columns:1fr; } .admin-row { font-size:11px; } }
+.admin-section-heading,.admin-toolbar { align-items:center; display:flex; justify-content:space-between; margin-top:35px; } .admin-section-heading h2 { margin:0; }
+.admin-search,.admin-toolbar select { background:var(--cream); border:1px solid var(--line); padding:10px 12px; }
+.admin-alert { background:#fff0c7; border-left:4px solid var(--mustard); color:#70551a; font-size:13px; margin:18px 0; padding:13px 15px; }
+.admin-product-row { grid-template-columns:1.4fr .8fr .8fr 1fr; } .admin-product-row span:first-child { display:flex; flex-direction:column; gap:4px; } .admin-row small,.category-admin-row small { color:#68746f; display:block; font:10px var(--mono); margin-top:4px; }
+.admin-actions { display:flex; gap:10px; } .admin-actions button { background:transparent; border:0; color:var(--coral); font:10px var(--mono); padding:0; } .stock-warning { color:#b73e2e; }
+.category-form { margin-top:20px; } .category-admin-row { align-items:start; border-top:1px solid var(--line); display:flex; justify-content:space-between; padding:12px 0; } .category-admin-row strong { font-size:13px; }
+@media (max-width:800px) { .admin-section-heading { align-items:stretch; flex-direction:column; gap:15px; } .admin-product-row { grid-template-columns:1fr 1fr; } .admin-product-row .admin-actions { grid-column:1 / -1; } }

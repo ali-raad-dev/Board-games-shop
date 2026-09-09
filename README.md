@@ -51,3 +51,4 @@ The project is currently in Phase 7: Admin Dashboard.
 - 2026-09-09: Implemented Phase 6 Stripe test-mode payment intents, server-verified order creation, webhook handling, order listing, and HTML receipt output.
 - 2026-09-09: Connected the React frontend to the API for catalog loading, account auth, persistent cart, Stripe Payment Element checkout, order confirmation, and order history.
 - 2026-09-09: Completed Phase 7 with protected admin product/category CRUD, inventory updates, order status management, sales reports, and an authenticated React dashboard at `/admin`.
+- 2026-09-09: Expanded the admin dashboard with product search/edit/delete, editable price and stock, category management, low-stock alerts, order filtering, and recent top-product sales.

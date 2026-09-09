@@ -58,6 +58,9 @@ Change this account before deployment.
 - Product and inventory table
 - Order table with status controls
 - Product creation form
+- Product search, price editing, stock editing, and deletion
+- Category creation, editing, and deletion
+- Low-stock alerts and recent top-product sales
 
 It uses the protected API helpers in `frontend/src/api.js`. The dashboard is connected to the `/admin` route, and the header shows that route only for admin users.
 
@@ -75,6 +78,10 @@ It uses the protected API helpers in `frontend/src/api.js`. The dashboard is con
 - [ ] Inventory changes reviewed
 - [ ] Order status workflow reviewed
 - [ ] Sales report reviewed
+- [x] Product edit and delete controls added
+- [x] Category management controls added
+- [x] Low-stock alerts and product search added
+- [x] Recent top-product sales added
 - [ ] Customer receives `403` for admin routes
 - [x] Admin dashboard route wired into frontend router
 - [ ] MySQL-backed admin operations approved

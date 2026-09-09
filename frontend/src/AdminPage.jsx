@@ -1,35 +1,35 @@
-import { useEffect, useState } from 'react';
-import { createAdminProduct, getAdminOrders, getAdminProducts, getSalesReport, updateAdminOrderStatus } from './api';
+import { useEffect, useMemo, useState } from 'react';
+import { createAdminCategory, createAdminProduct, deleteAdminCategory, deleteAdminProduct, getAdminCategories, getAdminOrders, getAdminProducts, getSalesReport, getTopProductsReport, updateAdminCategory, updateAdminOrderStatus, updateAdminProduct } from './api';
+
+const statuses = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 export default function AdminPage({ token }) {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
   const [report, setReport] = useState(null);
-  const [form, setForm] = useState({ name: '', category: 'Strategy', price: '', stockQuantity: '' });
+  const [topProducts, setTopProducts] = useState([]);
+  const [search, setSearch] = useState('');
+  const [orderFilter, setOrderFilter] = useState('all');
   const [message, setMessage] = useState('');
+  const [productForm, setProductForm] = useState({ name: '', category: 'Strategy', price: '', stockQuantity: '' });
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
 
   async function refresh() {
-    const [productResult, orderResult, reportResult] = await Promise.all([getAdminProducts(token), getAdminOrders(token), getSalesReport(token)]);
-    setProducts(productResult.data);
-    setOrders(orderResult.data);
-    setReport(reportResult.data);
+    const results = await Promise.all([getAdminProducts(token), getAdminCategories(token), getAdminOrders(token), getSalesReport(token), getTopProductsReport(token)]);
+    setProducts(results[0].data); setCategories(results[1].data); setOrders(results[2].data); setReport(results[3].data); setTopProducts(results[4].data);
   }
-
   useEffect(() => { refresh().catch((error) => setMessage(error.message)); }, []);
+  function notify(promise) { promise.then(() => { setMessage('Saved successfully.'); refresh(); }).catch((error) => setMessage(error.message)); }
+  function addProduct(event) { event.preventDefault(); notify(createAdminProduct(token, { ...productForm, price: Number(productForm.price), stockQuantity: Number(productForm.stockQuantity) })); setProductForm({ name: '', category: categories[0]?.name || 'Strategy', price: '', stockQuantity: '' }); }
+  function editProduct(product) { const name = window.prompt('Product name', product.name); if (name === null) return; const price = window.prompt('Price', product.price); const stockQuantity = window.prompt('Stock quantity', product.stockQuantity); const category = window.prompt('Category', product.category); if ([price, stockQuantity, category].some((value) => value === null)) return; notify(updateAdminProduct(token, product.id, { name, price: Number(price), stockQuantity: Number(stockQuantity), category })); }
+  function removeProduct(id) { if (window.confirm('Delete this product?')) notify(deleteAdminProduct(token, id)); }
+  function addCategory(event) { event.preventDefault(); notify(createAdminCategory(token, categoryForm)); setCategoryForm({ name: '', description: '' }); }
+  function editCategory(category) { const name = window.prompt('Category name', category.name); const description = window.prompt('Description', category.description || ''); if (name === null || description === null) return; notify(updateAdminCategory(token, category.id, { name, description })); }
+  function removeCategory(id) { if (window.confirm('Delete this category? It must not contain products.')) notify(deleteAdminCategory(token, id)); }
+  const visibleProducts = useMemo(() => products.filter((product) => `${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase())), [products, search]);
+  const visibleOrders = orders.filter((order) => orderFilter === 'all' || order.status === orderFilter);
+  const lowStock = products.filter((product) => product.stockQuantity <= 3);
 
-  async function addProduct(event) {
-    event.preventDefault();
-    try {
-      await createAdminProduct(token, { ...form, price: Number(form.price), stockQuantity: Number(form.stockQuantity) });
-      setForm({ name: '', category: 'Strategy', price: '', stockQuantity: '' });
-      setMessage('Product created.');
-      refresh();
-    } catch (error) { setMessage(error.message); }
-  }
-
-  async function changeStatus(orderId, status) {
-    try { await updateAdminOrderStatus(token, orderId, status); refresh(); } catch (error) { setMessage(error.message); }
-  }
-
-  return <section className="admin-page"><div className="page-heading"><p className="eyebrow">Admin dashboard</p><h1>Run the<br /><i>shop.</i></h1><p>Manage products, inventory, orders, and sales from one protected workspace.</p></div>{message && <p className="form-error">{message}</p>}{report && <div className="admin-metrics"><div><span>Orders</span><strong>{report.totalOrders}</strong></div><div><span>Paid orders</span><strong>{report.paidOrders}</strong></div><div><span>Revenue</span><strong>${Number(report.revenue).toFixed(2)}</strong></div></div>}<div className="admin-layout"><div><h2>Products</h2><div className="admin-table">{products.map((product) => <div className="admin-row" key={product.id}><span>{product.name}</span><span>{product.category}</span><span>${Number(product.price).toFixed(2)}</span><strong>{product.stockQuantity} in stock</strong></div>)}</div><h2>Orders</h2><div className="admin-table">{orders.length ? orders.map((order) => <div className="admin-row" key={order.id}><span>Order #{order.id}</span><strong>${Number(order.totalAmount).toFixed(2)}</strong><select value={order.status} onChange={(event) => changeStatus(order.id, event.target.value)}><option>pending</option><option>paid</option><option>processing</option><option>shipped</option><option>delivered</option><option>cancelled</option></select></div>) : <p>No orders yet.</p>}</div></div><form className="admin-form" onSubmit={addProduct}><h2>Add product</h2><label>Name<input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label>Category<select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}><option>Strategy</option><option>Family</option><option>Party</option><option>Two player</option></select></label><label>Price<input required type="number" min="0" step="0.01" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} /></label><label>Stock<input required type="number" min="0" value={form.stockQuantity} onChange={(event) => setForm({ ...form, stockQuantity: event.target.value })} /></label><button className="button button-dark">Create product ↗</button></form></div></section>;
+  return <section className="admin-page"><div className="page-heading"><p className="eyebrow">Admin dashboard</p><h1>Run the<br /><i>shop.</i></h1><p>Manage catalogue, inventory, orders, categories, and sales from one protected workspace.</p></div>{message && <p className="form-error">{message}</p>}{report && <div className="admin-metrics"><div><span>Total orders</span><strong>{report.totalOrders}</strong></div><div><span>Paid orders</span><strong>{report.paidOrders}</strong></div><div><span>Revenue</span><strong>${Number(report.revenue).toFixed(2)}</strong></div><div><span>Low stock</span><strong>{lowStock.length}</strong></div></div>}{lowStock.length > 0 && <div className="admin-alert">Low stock: {lowStock.map((product) => `${product.name} (${product.stockQuantity})`).join(', ')}</div>}<div className="admin-layout"><div><div className="admin-section-heading"><h2>Products & inventory</h2><input className="admin-search" placeholder="Search products" value={search} onChange={(event) => setSearch(event.target.value)} /></div><div className="admin-table">{visibleProducts.map((product) => <div className="admin-row admin-product-row" key={product.id}><span><strong>{product.name}</strong><small>{product.category}</small></span><span>${Number(product.price).toFixed(2)}</span><strong className={product.stockQuantity <= 3 ? 'stock-warning' : ''}>{product.stockQuantity} in stock</strong><span className="admin-actions"><button onClick={() => editProduct(product)}>Edit</button><button onClick={() => removeProduct(product.id)}>Delete</button></span></div>)}</div><h2>Orders</h2><div className="admin-toolbar"><span>{visibleOrders.length} orders</span><select value={orderFilter} onChange={(event) => setOrderFilter(event.target.value)}><option value="all">All statuses</option>{statuses.map((status) => <option key={status}>{status}</option>)}</select></div><div className="admin-table">{visibleOrders.length ? visibleOrders.map((order) => <div className="admin-row" key={order.id}><span>Order #{order.id}<small>{new Date(order.createdAt || Date.now()).toLocaleDateString()}</small></span><strong>${Number(order.totalAmount).toFixed(2)}</strong><select value={order.status} onChange={(event) => notify(updateAdminOrderStatus(token, order.id, event.target.value))}>{statuses.map((status) => <option key={status}>{status}</option>)}</select></div>) : <p>No matching orders.</p>}</div><h2>Recent sales</h2><div className="admin-table">{topProducts.length ? topProducts.map((item) => <div className="admin-row" key={item.productId}><span>Product #{item.productId}</span><strong>{item.quantity} sold</strong></div>) : <p>No product sales recorded yet.</p>}</div></div><div><form className="admin-form" onSubmit={addProduct}><h2>Add product</h2><label>Name<input required value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} /></label><label>Category<select value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })}>{categories.map((category) => <option key={category.id}>{category.name}</option>)}</select></label><label>Price<input required type="number" min="0" step="0.01" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} /></label><label>Stock<input required type="number" min="0" value={productForm.stockQuantity} onChange={(event) => setProductForm({ ...productForm, stockQuantity: event.target.value })} /></label><button className="button button-dark">Create product ↗</button></form><form className="admin-form" onSubmit={addCategory}><h2>Add category</h2><label>Name<input required value={categoryForm.name} onChange={(event) => setCategoryForm({ ...categoryForm, name: event.target.value })} /></label><label>Description<input value={categoryForm.description} onChange={(event) => setCategoryForm({ ...categoryForm, description: event.target.value })} /></label><button className="button button-outline">Create category ↗</button></form><div className="admin-form"><h2>Categories</h2>{categories.map((category) => <div className="category-admin-row" key={category.id}><span><strong>{category.name}</strong><small>{category.description}</small></span><span className="admin-actions"><button onClick={() => editCategory(category)}>Edit</button><button onClick={() => removeCategory(category.id)}>Delete</button></span></div>)}</div></div></div></section>;
 }
