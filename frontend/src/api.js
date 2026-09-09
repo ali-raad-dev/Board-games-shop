@@ -18,5 +18,10 @@ export function createPaymentIntent(token) { return request('/checkout/payment-i
 export function syncCart(token, items) { return request('/cart', { method: 'PUT', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ items }) }); }
 export function createOrder(token, payload) { return request('/orders', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
 export function getOrders(token) { return request('/orders', { headers: { Authorization: `Bearer ${token}` } }); }
+export function getAdminProducts(token) { return request('/admin/products', { headers: { Authorization: `Bearer ${token}` } }); }
+export function createAdminProduct(token, payload) { return request('/admin/products', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) }); }
+export function getAdminOrders(token) { return request('/admin/orders', { headers: { Authorization: `Bearer ${token}` } }); }
+export function updateAdminOrderStatus(token, orderId, status) { return request(`/admin/orders/${orderId}/status`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ status }) }); }
+export function getSalesReport(token) { return request('/admin/reports/sales', { headers: { Authorization: `Bearer ${token}` } }); }
 export async function getReceipt(token, orderId) { const response = await fetch(`${API_URL}/orders/${orderId}/receipt`, { headers: { Authorization: `Bearer ${token}` } }); if (!response.ok) throw new Error('Receipt unavailable.'); return response.text(); }
 export { API_URL };

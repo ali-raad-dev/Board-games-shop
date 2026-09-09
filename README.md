@@ -23,6 +23,7 @@ The project is currently in Phase 6: Payment and Order Workflow.
 - [Phase 4: Back-End Application](docs/phase-4-backend.md)
 - [Phase 5: Database](docs/phase-5-database.md)
 - [Phase 6: Payment and Order Workflow](docs/phase-6-payment-order-workflow.md)
+- [Phase 7: Admin Dashboard](docs/phase-7-admin-dashboard.md)
 
 ## Phase File Map
 
@@ -33,6 +34,7 @@ The project is currently in Phase 6: Payment and Order Workflow.
 - Phase 5 database: `database/` and `backend/src/config/database.js`
 - Phase 6 payment and order workflow: `backend/src/routes/orders.js` and `backend/src/services/stripe.js`
 - Phase 7 admin dashboard: not started
+- Phase 7 admin dashboard: `backend/src/routes/admin.js` and `frontend/src/AdminPage.jsx`
 - Phase 8 testing: not started
 - Phase 9 deployment: not started
 - Phase 10 final package: not started
@@ -49,3 +51,4 @@ The project is currently in Phase 6: Payment and Order Workflow.
 - 2026-09-08: Added a standalone `/story` frontend page for Our Story with responsive feature content and navigation from the header.
 - 2026-09-09: Implemented Phase 6 Stripe test-mode payment intents, server-verified order creation, webhook handling, order listing, and HTML receipt output.
 - 2026-09-09: Connected the React frontend to the API for catalog loading, account auth, persistent cart, Stripe Payment Element checkout, order confirmation, and order history.
+- 2026-09-09: Started Phase 7 with protected admin product/category CRUD, inventory updates, order status management, sales reports, and an isolated React admin dashboard component.
