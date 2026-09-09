@@ -2,7 +2,7 @@
 
 ## Status
 
-**Phase 7 backend administration is implemented and verified.** The API uses the temporary in-memory repository until the Phase 5 MySQL tables are connected. A reusable React dashboard component is also prepared in `frontend/src/AdminPage.jsx`.
+**Phase 7 administration is implemented and verified.** The API uses the temporary in-memory repository until the Phase 5 MySQL tables are connected. The React dashboard is available at `/admin` for authenticated admin users.
 
 ## File Locations
 
@@ -12,6 +12,7 @@
 - Temporary products and orders: `backend/src/data/mockData.js`
 - Admin API client: `frontend/src/api.js`
 - Admin dashboard component: `frontend/src/AdminPage.jsx`
+- Admin browser route: `http://127.0.0.1:5173/admin`
 - Phase 7 documentation: `docs/phase-7-admin-dashboard.md`
 
 ## Implemented Admin API
@@ -58,14 +59,14 @@ Change this account before deployment.
 - Order table with status controls
 - Product creation form
 
-It uses the protected API helpers in `frontend/src/api.js`. The dashboard should be connected to the `/admin` route after the current frontend router is refactored into separate route modules.
+It uses the protected API helpers in `frontend/src/api.js`. The dashboard is connected to the `/admin` route, and the header shows that route only for admin users.
 
 ## Phase Boundary
 
 - This phase uses in-memory product and order collections.
 - Phase 5 MySQL integration must replace those collections before deployment.
 - Reporting will become persistent and accurate after MySQL integration.
-- Admin frontend route wiring is intentionally isolated for the next frontend routing pass.
+- Admin frontend route wiring is complete.
 
 ## Phase 7 Review Checklist
 
@@ -75,5 +76,5 @@ It uses the protected API helpers in `frontend/src/api.js`. The dashboard should
 - [ ] Order status workflow reviewed
 - [ ] Sales report reviewed
 - [ ] Customer receives `403` for admin routes
-- [ ] Admin dashboard route wired into frontend router
+- [x] Admin dashboard route wired into frontend router
 - [ ] MySQL-backed admin operations approved

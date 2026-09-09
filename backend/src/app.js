@@ -12,7 +12,7 @@ app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://127.0.0.1:5173' }));
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), orders.handleStripeWebhook);
 app.use(express.json());
 
-app.get('/api/health', (request, response) => response.json({ status: 'ok', phase: 6 }));
+app.get('/api/health', (request, response) => response.json({ status: 'ok', phase: 7 }));
 app.post('/api/auth/register', auth.register);
 app.post('/api/auth/login', auth.login);
 app.get('/api/auth/me', requireAuth, auth.getCurrentUser);
